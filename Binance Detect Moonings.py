@@ -454,7 +454,6 @@ def update_coin(json_object, param1, param2):
 def update_portfolio(orders, last_price, volume):
     '''add every coin bought to our portfolio for tracking/selling later'''
     if DEBUG: print(orders)
-    print(orders)
     for coin in orders:
         coins_bought[coin] = {
             'symbol': orders[coin][0]['symbol'],

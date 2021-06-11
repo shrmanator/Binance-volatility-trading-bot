@@ -459,6 +459,24 @@ def write_log(logline):
     with open(LOG_FILE,'a+') as f:
         f.write(timestamp + ' ' + logline + '\n')
 
+
+def _count_text_lines(file_name):
+    with open(file_name) as f:
+        for i, l in enumerate(f):
+            pass
+    return i + 1
+
+def log_session_profit(file_name):
+    f = open(file_name, "r+")
+    print(f"Session {_count_text_lines(file_name)} ended. Profits recorded in {file_name}.")
+    string = f"===== {datetime.date(datetime.now())} ===== \n"
+    if string not in f:
+        f.write(string)
+    f.write(f"Session # {str(_count_text_lines(file_name))} profit: $ {(QUANTITY * session_profit)/100:.2f} \n")
+    f.close()
+    sys.exit()
+
+
 if __name__ == '__main__':
 
     # Load arguments then parse settings
@@ -604,5 +622,13 @@ if __name__ == '__main__':
         except ConnectionError as ce:
             CONNECTION_ERROR_COUNT +=1 
             print(f'{txcolors.WARNING}We got a timeout error from from binance. Going to re-loop. Current Count: {CONNECTION_ERROR_COUNT}\n{ce}{txcolors.DEFAULT}')
+        except (KeyboardInterrupt, SystemExit):
+            # writes total session profit to activitylogs once session ended
+            if TEST_MODE:
+                log_session_profit("activitylogs/TEST_session_profit_losses")
+            else:
+                log_session_profit("activitylogs/LIVE_session_profit_losses")
+            
+
 
 

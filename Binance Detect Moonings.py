@@ -340,7 +340,7 @@ def buy():
                     time.sleep(1)
 
                 else:
-                    playsound('buy.mp3')
+                    playsound('audio_files/buy.mp3')
                     print('Order returned, saving order to file')
                     # Log trade
                     if LOG_TRADES:
@@ -408,7 +408,7 @@ def sell_coins():
 
                 # Log trade
                 if LOG_TRADES:
-                    playsound('sell.mp3')
+                    playsound('audio_files/sell.mp3')
                     profit = ((LastPrice - BuyPrice) * coins_sold[coin]['volume'])* (1-(TRADING_FEE*2)) # adjust for trading fee here
                     write_log(f"Sell: {coins_sold[coin]['volume']} {coin} - {BuyPrice} - {LastPrice} Profit: {profit:.2f} {PriceChange-(TRADING_FEE*2):.2f}%")
                     session_profit=session_profit + (PriceChange-(TRADING_FEE*2))
@@ -468,9 +468,13 @@ def _count_text_lines(file_name):
     return i + 1
 
 def log_session_profit(file_name):
+    """
+    Logs session profit/losses to file_name
+    """
     f = open(file_name, "r+")
     print(f"Session {_count_text_lines(file_name)} ended. Profits recorded in {file_name}.")
     string = f"===== {datetime.date(datetime.now())} ===== \n"
+    print(string in f, string)
     if string not in f:
         f.write(string)
     f.write(f"Session # {str(_count_text_lines(file_name))} profit: $ {(QUANTITY * session_profit)/100:.2f} \n")
@@ -626,9 +630,9 @@ if __name__ == '__main__':
         except (KeyboardInterrupt, SystemExit):
             # writes total session profit to activitylogs once session ended
             if TEST_MODE:
-                log_session_profit("activitylogs/TEST_session_profit_losses")
+                log_session_profit("activitylogs/TEST_profit_losses")
             else:
-                log_session_profit("activitylogs/LIVE_session_profit_losses")
+                log_session_profit("activitylogs/LIVE_profit_losses")
             
 
 

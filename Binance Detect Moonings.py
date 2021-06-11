@@ -55,6 +55,8 @@ from helpers.handle_creds import (
     load_correct_creds, test_api_key
 )
 
+from playsound import playsound
+
 
 # for colourful logging to the console
 class txcolors:
@@ -338,13 +340,11 @@ def buy():
                     time.sleep(1)
 
                 else:
+                    playsound('buy.mp3')
                     print('Order returned, saving order to file')
-
                     # Log trade
                     if LOG_TRADES:
                         write_log(f"Buy : {volume[coin]} {coin} - {last_price[coin]['price']}")
-
-
         else:
             print(f'Signal detected, but there is already an active trade on {coin}')
 
@@ -408,6 +408,7 @@ def sell_coins():
 
                 # Log trade
                 if LOG_TRADES:
+                    playsound('sell.mp3')
                     profit = ((LastPrice - BuyPrice) * coins_sold[coin]['volume'])* (1-(TRADING_FEE*2)) # adjust for trading fee here
                     write_log(f"Sell: {coins_sold[coin]['volume']} {coin} - {BuyPrice} - {LastPrice} Profit: {profit:.2f} {PriceChange-(TRADING_FEE*2):.2f}%")
                     session_profit=session_profit + (PriceChange-(TRADING_FEE*2))

@@ -365,7 +365,6 @@ def sell_coins():
         TP = float(coins_bought[coin]['bought_at']) + (float(coins_bought[coin]['bought_at']) * coins_bought[coin]['take_profit']) / 100
         SL = float(coins_bought[coin]['bought_at']) + (float(coins_bought[coin]['bought_at']) * coins_bought[coin]['stop_loss']) / 100
 
-
         LastPrice = float(last_price[coin]['price'])
         BuyPrice = float(coins_bought[coin]['bought_at'])
         PriceChange = float((LastPrice - BuyPrice) / BuyPrice * 100)
@@ -385,14 +384,12 @@ def sell_coins():
 
             # try to create a real order
             try:
-
                 if not TEST_MODE:
                     sell_coins_limit = client.create_order(
                         symbol = coin,
                         side = 'SELL',
                         type = 'MARKET',
                         quantity = coins_bought[coin]['volume']
-
                     )
 
             # error handling here in case position cannot be placed
@@ -408,9 +405,10 @@ def sell_coins():
 
                 # Log trade
                 if LOG_TRADES:
-                    playsound('audio_files/sell.mp3')
+                    
                     profit = ((LastPrice - BuyPrice) * coins_sold[coin]['volume'])* (1-(TRADING_FEE*2)) # adjust for trading fee here
                     write_log(f"Sell: {coins_sold[coin]['volume']} {coin} - {BuyPrice} - {LastPrice} Profit: {profit:.2f} {PriceChange-(TRADING_FEE*2):.2f}%")
+                    playsound('audio_files/sell.mp3')
                     session_profit=session_profit + (PriceChange-(TRADING_FEE*2))
             continue
 
@@ -423,6 +421,28 @@ def sell_coins():
  
     return coins_sold
 
+
+def update_coin(json_file_path, param1, param2):
+    """
+    Updates 2 values in any coin's json data.
+    param1: the coin's SL/TP
+    param2: the coin's SL/TP
+
+    Example:
+    "EXAMPLECOIN": {
+        "symbol": "EXAMPLECOIN",
+        "orderid": 483289970,
+        "timestamp": 1623244344267,
+        "bought_at": "14.25700000",
+        "volume": 2.104,
+        "stop_loss": -1, <--- will change any 2 of these values
+        "take_profit": 10
+    """
+    file_object = open(json_file_path)
+    json_object = json.load(file_object)
+    for obj in json_object:
+        json_object[obj][param1] = -STOP_LOSS
+        json_object[obj][param2] = TAKE_PROFIT
 
 def update_portfolio(orders, last_price, volume):
     '''add every coin bought to our portfolio for tracking/selling later'''
@@ -454,12 +474,10 @@ def remove_from_portfolio(coins_sold):
     with open(coins_bought_file_path, 'w') as file:
         json.dump(coins_bought, file, indent=4)
 
-
 def write_log(logline):
     timestamp = datetime.now().strftime("%d/%m %H:%M:%S")
     with open(LOG_FILE,'a+') as f:
         f.write(timestamp + ' ' + logline + '\n')
-
 
 def _count_text_lines(file_name):
     with open(file_name) as f:
@@ -579,8 +597,8 @@ if __name__ == '__main__':
 
     if not TEST_MODE:
         if not args.notimeout: # if notimeout skip this (fast for dev tests)
-            print('WARNING: You are using the Mainnet and live funds. Waiting 30 seconds as a security measure')
-            time.sleep(30)
+            print('WARNING: You are using the Mainnet and live funds. Waiting 5 seconds as a security measure')
+            time.sleep(5)
 
     signals = glob.glob("signals/*.exs")
     for filename in signals:
@@ -617,6 +635,9 @@ if __name__ == '__main__':
     CONNECTION_ERROR_COUNT = 0
     while True:
         try:
+            # Update SL/TP of all coins in coins_bought.json:
+            update_coin(coins_bought_file_path, 'stop_loss', 'take_profit')
+
             orders, last_price, volume = buy()
             update_portfolio(orders, last_price, volume)
             coins_sold = sell_coins()

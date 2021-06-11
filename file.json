@@ -1,0 +1,29 @@
+{
+    "WINGUSDT": {
+        "symbol": "WINGUSDT",
+        "orderid": 0,
+        "timestamp": 1623432359.697583,
+        "bought_at": "22.89000000",
+        "volume": 2.184,
+        "stop_loss": -77,
+        "take_profit": 77
+    },
+    "STPTUSDT": {
+        "symbol": "STPTUSDT",
+        "orderid": 0,
+        "timestamp": 1623432369.653839,
+        "bought_at": "0.06550000",
+        "volume": 763.4,
+        "stop_loss": -77,
+        "take_profit": 77
+    },
+    "FORTHUSDT": {
+        "symbol": "FORTHUSDT",
+        "orderid": 0,
+        "timestamp": 1623432371.066519,
+        "bought_at": "15.83600000",
+        "volume": 3.157,
+        "stop_loss": -77,
+        "take_profit": 77
+    }
+}

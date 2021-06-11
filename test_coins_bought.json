@@ -1,0 +1,29 @@
+{
+    "XTZUPUSDT": {
+        "symbol": "XTZUPUSDT",
+        "orderid": 0,
+        "timestamp": 1623441852.153033,
+        "bought_at": "0.06000000",
+        "volume": 833.33,
+        "stop_loss": 77,
+        "take_profit": -80
+    },
+    "COCOSUSDT": {
+        "symbol": "COCOSUSDT",
+        "orderid": 0,
+        "timestamp": 1623441912.195284,
+        "bought_at": "0.64910000",
+        "volume": 77.03,
+        "stop_loss": 77,
+        "take_profit": -80
+    },
+    "GTOUSDT": {
+        "symbol": "GTOUSDT",
+        "orderid": 0,
+        "timestamp": 1623441917.628151,
+        "bought_at": "0.06615000",
+        "volume": 755.9,
+        "stop_loss": 77,
+        "take_profit": -80
+    }
+}

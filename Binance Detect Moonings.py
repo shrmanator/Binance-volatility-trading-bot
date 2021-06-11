@@ -11,8 +11,6 @@ By using this program you accept all liabilities,
 and that no claims can be made against the developers,
 or others connected with the program.
 """
-
-
 # use for environment variables
 import os
 
@@ -55,7 +53,7 @@ from helpers.handle_creds import (
     load_correct_creds, test_api_key
 )
 
-from playsound import playsound
+# from playsound import playsound
 
 
 # for colourful logging to the console
@@ -340,7 +338,7 @@ def buy():
                     time.sleep(1)
 
                 else:
-                    playsound('audio_files/buy.mp3')
+                    # playsound('audio_files/buy.mp3')
                     print('Order returned, saving order to file')
                     # Log trade
                     if LOG_TRADES:
@@ -408,7 +406,7 @@ def sell_coins():
                     
                     profit = ((LastPrice - BuyPrice) * coins_sold[coin]['volume'])* (1-(TRADING_FEE*2)) # adjust for trading fee here
                     write_log(f"Sell: {coins_sold[coin]['volume']} {coin} - {BuyPrice} - {LastPrice} Profit: {profit:.2f} {PriceChange-(TRADING_FEE*2):.2f}%")
-                    playsound('audio_files/sell.mp3')
+                    # playsound('audio_files/sell.mp3')
                     session_profit=session_profit + (PriceChange-(TRADING_FEE*2))
             continue
 
@@ -422,7 +420,7 @@ def sell_coins():
     return coins_sold
 
 
-def update_coin(json_file_path, param1, param2):
+def update_coin(json_object, param1, param2):
     """
     Updates 2 values in any coin's json data.
     param1: the coin's SL/TP
@@ -438,17 +436,26 @@ def update_coin(json_file_path, param1, param2):
         "stop_loss": -1, <--- will change any 2 of these values
         "take_profit": 10
     """
-    file_object = open(json_file_path)
-    json_object = json.load(file_object)
-    for obj in json_object:
-        json_object[obj][param1] = -STOP_LOSS
-        json_object[obj][param2] = TAKE_PROFIT
+    pass
+    with open(coins_bought_file_path, "r") as jsonFile:
+        updated_coins = {}
+        coins = json.load(jsonFile)
+        for coin in coins:
+            coins[coin][param1] = TAKE_PROFIT
+            coins[coin][param2] = -STOP_LOSS
+            updated_coins[coin] = coins[coin]
+            # coins[coin][param1] = TAKE_PROFIT
+            # coins[coin][param2] = -STOP_LOSS
+        jsonFile.close()
+    with open(coins_bought_file_path, "w") as jsonFile:
+        json.dump(updated_coins, jsonFile, indent=4)
+        
 
 def update_portfolio(orders, last_price, volume):
     '''add every coin bought to our portfolio for tracking/selling later'''
     if DEBUG: print(orders)
+    print(orders)
     for coin in orders:
-
         coins_bought[coin] = {
             'symbol': orders[coin][0]['symbol'],
             'orderid': orders[coin][0]['orderId'],
@@ -458,7 +465,6 @@ def update_portfolio(orders, last_price, volume):
             'stop_loss': -STOP_LOSS,
             'take_profit': TAKE_PROFIT,
             }
-
         # save the coins in a json file in the same directory
         with open(coins_bought_file_path, 'w') as file:
             json.dump(coins_bought, file, indent=4)
@@ -635,13 +641,13 @@ if __name__ == '__main__':
     CONNECTION_ERROR_COUNT = 0
     while True:
         try:
-            # Update SL/TP of all coins in coins_bought.json:
             update_coin(coins_bought_file_path, 'stop_loss', 'take_profit')
-
+            # Update SL/TP of all coins in coins_bought.json:
             orders, last_price, volume = buy()
             update_portfolio(orders, last_price, volume)
             coins_sold = sell_coins()
             remove_from_portfolio(coins_sold)
+            
         except ReadTimeout as rt:
             READ_TIMEOUT_COUNT += 1
             print(f'{txcolors.WARNING}We got a timeout error from from binance. Going to re-loop. Current Count: {READ_TIMEOUT_COUNT}\n{rt}{txcolors.DEFAULT}')

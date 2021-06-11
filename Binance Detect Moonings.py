@@ -473,9 +473,9 @@ def log_session_profit(file_name):
     """
     f = open(file_name, "r+")
     print(f"Session {_count_text_lines(file_name)} ended. Profits recorded in {file_name}.")
-    string = f"===== {datetime.date(datetime.now())} ===== \n"
-    print(string in f, string)
+    string = f"===== {datetime.date(datetime.now())} =====\n"
     if string not in f:
+        print(string, str(f))
         f.write(string)
     f.write(f"Session # {str(_count_text_lines(file_name))} profit: $ {(QUANTITY * session_profit)/100:.2f} \n")
     f.close()

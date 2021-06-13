@@ -55,7 +55,6 @@ from helpers.handle_creds import (
 
 from playsound import playsound
 
-
 # for colourful logging to the console
 class txcolors:
     BUY = '\033[92m'
@@ -340,7 +339,7 @@ def buy():
                     time.sleep(1)
 
                 else:
-                    # playsound('audio_files/buy.mp3')
+                    playsound('audio_files/buy.mp3')
                     print('Order returned, saving order to file')
                     # Log trade
                     if LOG_TRADES:
@@ -380,7 +379,7 @@ def sell_coins():
 
         # check that the price is below the stop loss or above take profit (if trailing stop loss not used) and sell if this is the case
         if LastPrice < SL or LastPrice > TP and not USE_TRAILING_STOP_LOSS:
-            print(f"{txcolors.SELL_PROFIT if PriceChange >= 0. else txcolors.SELL_LOSS}TP or SL reached, selling {coins_bought[coin]['volume']} {coin} - {BuyPrice} - {LastPrice} : {PriceChange-(TRADING_FEE*2):.2f}% Est:${(QUANTITY*(PriceChange-(TRADING_FEE*2)))/100:.2f}{txcolors.DEFAULT}")
+            print(f"{txcolors.SELL_PROFIT if PriceChange > 0. else txcolors.SELL_LOSS}TP or SL reached, selling {coins_bought[coin]['volume']} {coin} - {BuyPrice} - {LastPrice} : {PriceChange-(TRADING_FEE*2):.2f}% Est:${(QUANTITY*(PriceChange-(TRADING_FEE*2)))/100:.2f}{txcolors.DEFAULT}")
 
             # try to create a real order
             try:
@@ -408,7 +407,7 @@ def sell_coins():
                     
                     profit = ((LastPrice - BuyPrice) * coins_sold[coin]['volume'])* (1-(TRADING_FEE*2)) # adjust for trading fee here
                     write_log(f"Sell: {coins_sold[coin]['volume']} {coin} - {BuyPrice} - {LastPrice} Profit: {profit:.2f} {PriceChange-(TRADING_FEE*2):.2f}%")
-                    # playsound('audio_files/sell.mp3')
+                    playsound('audio_files/sell.mp3')
                     session_profit=session_profit + (PriceChange-(TRADING_FEE*2))
             continue
 
@@ -647,7 +646,6 @@ if __name__ == '__main__':
             # Update SL/TP of all coins in coins_bought.json:
             orders, last_price, volume = buy()
             update_portfolio(orders, last_price, volume)
-            print("hi")
 
             coins_sold = sell_coins()
             remove_from_portfolio(coins_sold)

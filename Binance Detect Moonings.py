@@ -53,7 +53,7 @@ from helpers.handle_creds import (
     load_correct_creds, test_api_key
 )
 
-# from playsound import playsound
+from playsound import playsound
 
 
 # for colourful logging to the console
@@ -230,6 +230,8 @@ def pause_bot():
         # Sell function needs to work even while paused
         coins_sold = sell_coins()
         remove_from_portfolio(coins_sold)
+        update_coin(coins_bought_file_path, 'stop_loss', 'take_profit')
+
         get_price(True)
 
         # pausing here
@@ -444,8 +446,7 @@ def update_coin(json_object, param1, param2):
             coins[coin][param1] = TAKE_PROFIT
             coins[coin][param2] = -STOP_LOSS
             updated_coins[coin] = coins[coin]
-            # coins[coin][param1] = TAKE_PROFIT
-            # coins[coin][param2] = -STOP_LOSS
+
         jsonFile.close()
     with open(coins_bought_file_path, "w") as jsonFile:
         json.dump(updated_coins, jsonFile, indent=4)
@@ -638,12 +639,16 @@ if __name__ == '__main__':
     get_price()
     READ_TIMEOUT_COUNT=0
     CONNECTION_ERROR_COUNT = 0
+
     while True:
+        
         try:
             update_coin(coins_bought_file_path, 'stop_loss', 'take_profit')
             # Update SL/TP of all coins in coins_bought.json:
             orders, last_price, volume = buy()
             update_portfolio(orders, last_price, volume)
+            print("hi")
+
             coins_sold = sell_coins()
             remove_from_portfolio(coins_sold)
             
@@ -659,7 +664,6 @@ if __name__ == '__main__':
                 log_session_profit("activitylogs/TEST_profit_losses")
             else:
                 log_session_profit("activitylogs/LIVE_profit_losses")
-            
 
 
 
